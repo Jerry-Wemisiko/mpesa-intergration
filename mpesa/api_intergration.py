@@ -73,7 +73,7 @@ def register_mpesa_urls():
     
 
 
-def lipa_na_mpesa(phone_number):
+def lipa_na_mpesa(phone_number, amount):
     """
     Initiates a Lipa na M-Pesa STK Push (Sim Toolkit prompt).
     The user will receive a prompt on their phone to enter their PIN and pay.
@@ -91,7 +91,7 @@ def lipa_na_mpesa(phone_number):
         "Password": password,  # Encoded password
         "Timestamp": timestamp,  # Timestamp
         "TransactionType": "CustomerPayBillOnline",  # Transaction type
-        "Amount": amount,  # Amount to charge the customer
+        "Amount": int(amount),  # Amount to charge the customer
         "PartyA": phone_number,  # Customer's phone number
         "PartyB": settings.MPESA_SHORTCODE,  # Business shortcode (Paybill)
         "PhoneNumber": phone_number,  # Same as PartyA

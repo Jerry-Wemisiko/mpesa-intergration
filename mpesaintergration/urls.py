@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.contrib import admin
-from django.urls import path
+from django.urls import path , include
 
 def homepage(request):
     data = {
@@ -9,6 +9,10 @@ def homepage(request):
     }
     return JsonResponse(data)
 
+# urlpatterns = [
+#     path("", homepage),
+# ]
 urlpatterns = [
-    path("", homepage),
+    path("admin/", admin.site.urls),
+    path("", include("mpesa.urls")),  # Include mpesa URLs
 ]
