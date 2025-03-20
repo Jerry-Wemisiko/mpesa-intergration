@@ -33,9 +33,18 @@ def mpesa_payd_view(request):
     Example: http://127.0.0.1:8000/lipa-na-mpesa/?phone=254712345678&amount=100
     """
     
-    phone_number = "2547462123493"
-    amount = 300000000
+    phone_number = request.GET.get("phone", "254708374149")  # Use sandbox test number by default
+    amount = request.GET.get("amount", 100)  # Default to 100 if no amount is provided
     
+    try:
+        amount = int(amount)  # Ensure amount is an integer
+    except ValueError:
+        return JsonResponse({"error": "Amount must be a valid number"}, status=400)
+
+ # Use sandbox test credentials
+    if phone_number != "254708374149":
+        return JsonResponse({"error": "Use the sandbox test phone number"}, status=400)
+
     data = lipa_na_mpesa(phone_number, amount)  
     
     return JsonResponse(data)
