@@ -22,6 +22,8 @@ MPESA_SHORTCODE = env('MPESA_SHORTCODE')
 MPESA_PASSKEY = env('MPESA_PASSKEY')
 MPESA_ENV = env('MPESA_ENV')  # sandbox or production
 NGROK_URL = env('NGROK_URL')
+CALLBACK_URL = f"{NGROK_URL}/callback"
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

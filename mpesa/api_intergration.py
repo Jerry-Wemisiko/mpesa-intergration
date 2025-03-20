@@ -11,7 +11,7 @@ token_expiry_time = 0
 def get_access_token():
     global mpesa_token, token_expiry_time
     
-    if mpesa_token and token_expiry_time < token_expiry_time:
+    if mpesa_token and time.time() < token_expiry_time:
         return mpesa_token
     
     auth_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
