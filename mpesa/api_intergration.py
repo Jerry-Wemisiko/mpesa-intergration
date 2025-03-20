@@ -2,36 +2,41 @@ import requests, base64, json, time
 from django.conf import settings
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
-
-# Global variables to store the access token and its expiry time
-mpesa_token = None
-token_expiry_time = 0
+from .models import MpesaAccessToken
 
 def get_mpesa_token():
     """
-    Fetches an access token from the Safaricom M-Pesa API.
-    The token is stored globally and reused until it expires.
+     Fetches an access token from the database if valid, otherwise requests a new one from M-Pesa.
     """
-    global mpesa_token, token_expiry_time
-
-    if mpesa_token and time.time() < token_expiry_time:
-        return mpesa_token
-
+  
+# 1️⃣ Check if we already have a valid token in the database
+    token_entry = MpesaAccessToken.objects.first()
+    
+    if token_entry and token_entry.is_token_valid():
+        return token_entry.token  # Return existing valid token
+    # 2️⃣ If no valid token, request a new one
     auth_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-
     response = requests.get(
         auth_url,
         auth=HTTPBasicAuth(settings.MPESA_CONSUMER_KEY, settings.MPESA_CONSUMER_SECRET),
     )
-
     response_data = response.json()
+    
+    if "access_token" in response_data:
+        new_token = response_data["access_token"]
+        new_token_expiry_time = time.time() + 3600
+        
+    
+        # 3️⃣ Save the new token in the database
+        MpesaAccessToken.objects.all().delete()  # Delete existing token
+        MpesaAccessToken.objects.create(token=new_token, expiry_time=new_token_expiry_time)
+        return new_token    
 
-    if response_data.get("access_token"):  # Corrected key
-        mpesa_token = response_data["access_token"]
-        token_expiry_time = time.time() + 3600
-        return mpesa_token
     else:
-        raise Exception("Could not get M-Pesa access token")
+        
+        raise Exception(f"Could not get M-Pesa access token :{response_data}")
+    
+    
 
 def register_mpesa_urls():
     """
